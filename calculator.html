@@ -1,0 +1,220 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fixed Deposit Calculator</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, sans-serif;
+        }
+
+        body{
+            background:#f5f5f5;
+            padding:30px;
+        }
+
+        h1{
+            text-align:center;
+            margin-bottom:30px;
+            color:#333;
+        }
+
+        .container{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:50px;
+        }
+
+        .controls{
+            width:45%;
+        }
+
+        .control-group{
+            margin-bottom:50px;
+        }
+
+        label{
+            display:block;
+            font-weight:bold;
+            margin-bottom:10px;
+        }
+
+        input[type="range"]{
+            width:100%;
+        }
+
+        .value{
+            margin-top:10px;
+            color:#444;
+            font-size:18px;
+        }
+
+        .chart-container{
+            width:400px;
+            position:relative;
+        }
+
+        .center-text{
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%,-50%);
+            text-align:center;
+            font-size:18px;
+            font-weight:bold;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Fixed Deposit Calculator</h1>
+
+<div class="container">
+
+    <div class="controls">
+
+        <div class="control-group">
+            <label>Deposit Amount:</label>
+
+            <input
+                type="range"
+                id="amount"
+                min="1000"
+                max="100000"
+                step="1000"
+                value="10000">
+
+            <div class="value" id="amountValue">$10,000</div>
+        </div>
+
+        <div class="control-group">
+            <label>Investment Term:</label>
+
+            <input
+                type="range"
+                id="months"
+                min="1"
+                max="60"
+                value="6">
+
+            <div class="value" id="monthValue">6 months</div>
+        </div>
+
+        <div class="control-group">
+            <label>Interest Rate:</label>
+
+            <input
+                type="range"
+                id="rate"
+                min="1"
+                max="20"
+                value="10">
+
+            <div class="value" id="rateValue">10%</div>
+        </div>
+
+    </div>
+
+    <div class="chart-container">
+
+        <canvas id="fdChart"></canvas>
+
+        <div class="center-text" id="result">
+            Balance: $0<br>
+            Interest: $0
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+const amountSlider = document.getElementById("amount");
+const monthSlider = document.getElementById("months");
+const rateSlider = document.getElementById("rate");
+
+const amountValue = document.getElementById("amountValue");
+const monthValue = document.getElementById("monthValue");
+const rateValue = document.getElementById("rateValue");
+
+const result = document.getElementById("result");
+
+const ctx = document.getElementById("fdChart");
+
+let chart = new Chart(ctx,{
+    type:'doughnut',
+    data:{
+        labels:['Deposit Amount','Total Interest'],
+        datasets:[{
+            data:[10000,500],
+            backgroundColor:[
+                '#9c7bd4',
+                '#f4df57'
+            ]
+        }]
+    },
+    options:{
+        cutout:'78%',
+        plugins:{
+            legend:{
+                position:'top'
+            }
+        }
+    }
+});
+
+function calculateFD(){
+
+    const principal = Number(amountSlider.value);
+    const months = Number(monthSlider.value);
+    const rate = Number(rateSlider.value);
+
+    amountValue.innerText =
+        "$" + principal.toLocaleString();
+
+    monthValue.innerText =
+        months + " months";
+
+    rateValue.innerText =
+        rate + "%";
+
+    const interest =
+        principal *
+        (rate/100) *
+        (months/12);
+
+    const balance =
+        principal + interest;
+
+    result.innerHTML =
+        `Balance: $${balance.toFixed(2)}<br>
+         Interest: $${interest.toFixed(2)}`;
+
+    chart.data.datasets[0].data =
+        [principal, interest];
+
+    chart.update();
+}
+
+amountSlider.addEventListener("input",calculateFD);
+monthSlider.addEventListener("input",calculateFD);
+rateSlider.addEventListener("input",calculateFD);
+
+calculateFD();
+
+</script>
+
+</body>
+</html>
+
+
+
